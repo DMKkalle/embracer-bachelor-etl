@@ -74,9 +74,7 @@ def normalize_catalog(frame: pd.DataFrame, platform_rules: dict) -> pd.DataFrame
         "title_language",
         pd.Series([""] * len(output), index=output.index),
     )
-    output["language_norm"] = [
-        normalize_language(value) for value in language_values
-    ]
+    output["language_norm"] = [normalize_language(value) for value in language_values]
 
     return output
 
