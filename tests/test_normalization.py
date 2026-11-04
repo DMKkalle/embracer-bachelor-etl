@@ -9,7 +9,9 @@ from embracer_etl.normalization import (
 
 
 def test_normalizes_typographic_punctuation():
-    assert normalize_punctuation("Game —  Special   Edition") == "Game - Special Edition"
+    assert (
+        normalize_punctuation("Game —  Special   Edition") == "Game - Special Edition"
+    )
 
 
 def test_chooses_ascii_alternative_for_non_ascii_primary():
