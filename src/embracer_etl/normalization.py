@@ -81,11 +81,7 @@ def split_alternative_titles(value: Any) -> list[str]:
     if len(parts) == 1:
         parts = re.split(r"[;,/]", text)
 
-    return [
-        normalized
-        for part in parts
-        if (normalized := normalize_punctuation(part))
-    ]
+    return [normalized for part in parts if (normalized := normalize_punctuation(part))]
 
 
 def choose_canonical_title(primary: Any, alternatives: list[str]) -> tuple[str, str]:
