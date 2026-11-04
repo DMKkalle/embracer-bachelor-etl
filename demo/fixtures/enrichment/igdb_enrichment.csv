@@ -1,0 +1,4 @@
+edition_id,title_primary,platform,igdb_id,igdb_name,genres,developers_for_platform,publishers_for_platform,release_date_for_platform,region_for_platform,platforms_all,release_dates_all,cover_url,confidence,source
+ED-AD3B4385D9,Chronicles III,SNES,DEMO-IGDB-001,Chronicles III,Adventure,Northstar Studio,Example Publishing,1994-03-18,Europe,Super Nintendo Entertainment System,1994-03-18 <Super Nintendo Entertainment System>,https://example.invalid/chronicles.jpg,1/2,igdb
+ED-6723A1FECC,Example Quest II,MD,DEMO-IGDB-002,Example Quest II,Role-playing (RPG),Demo Forge,Sample Games,1993-09-10,Europe,Sega Mega Drive/Genesis,1993-09-10 <Sega Mega Drive/Genesis>,https://example.invalid/quest.jpg,1/2,igdb
+ED-2D26B0CE38,星の冒険,SFC,DEMO-IGDB-003,Star Adventure,Platform,Tokyo Demo Works,Fictional Soft,1992-12-04,Japan,Super Famicom,1992-12-04 <Super Famicom>,https://example.invalid/star.jpg,1/1,igdb

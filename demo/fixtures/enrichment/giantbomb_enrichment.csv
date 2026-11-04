@@ -1,0 +1,4 @@
+edition_id,title_primary,platform,gb_game_id,gb_name,gb_genres,gb_developers_for_platform,gb_publishers_for_platform,gb_release_date_for_platform,gb_region_for_platform,gb_platforms_all,gb_release_dates_all,gb_cover_url,gb_confidence,source
+ED-AD3B4385D9,Chronicles III,SNES,DEMO-GB-001,Chronicles III,Adventure,Northstar Studio,Example Publishing,1994-03-18,Europe,Super Nintendo Entertainment System,1994-03-18 <Super Nintendo Entertainment System>,https://example.invalid/chronicles-gb.jpg,1/2,giantbomb
+ED-6723A1FECC,Example Quest II,MD,,Example Quest II,,,,,,,,,0/0,giantbomb
+ED-2D26B0CE38,星の冒険,SFC,,Star Adventure,,,,,,,,,0/1,giantbomb
