@@ -1,0 +1,50 @@
+exact_map:
+  "Nintendo Super Famicom": SFC
+  "Super Famicom": SFC
+  "Nintendo Super Nintendo Entertainment System": SNES
+  "Super Nintendo Entertainment System": SNES
+  "Nintendo Entertainment System": NES
+  "Nintendo Game Boy": GB
+  "Sega Mega Drive": MD
+  "Sega Genesis": GEN
+  "Sony PlayStation": PS
+  "Sony PlayStation 2": PS2
+  "Microsoft Xbox": XBOX
+
+alias_map:
+  SNES:
+    - "Super Nintendo"
+    - "Super NES"
+    - "SNS"
+  SFC:
+    - "Nintendo Super Famicom"
+    - "SHVC"
+  NES:
+    - "Nintendo Entertainment System"
+  GB:
+    - "Game Boy"
+    - "GameBoy"
+  MD:
+    - "Mega Drive"
+  GEN:
+    - "Genesis"
+  PS:
+    - "PlayStation"
+    - "PS1"
+    - "PSX"
+
+regex_map:
+  - pattern: "(?i)^snes(\\b|[^a-z])|super\\s*nintendo"
+    code: SNES
+  - pattern: "(?i)^sfc(\\b|[^a-z])|super\\s*famicom|\\bshvc\\b"
+    code: SFC
+  - pattern: "(?i)game\\s*boy|\\bgb\\b"
+    code: GB
+  - pattern: "(?i)mega\\s*drive"
+    code: MD
+  - pattern: "(?i)genesis"
+    code: GEN
+  - pattern: "(?i)playstation\\s*2|\\bps2\\b"
+    code: PS2
+  - pattern: "(?i)playstation(?!\\s*2)|\\bpsx\\b"
+    code: PS
