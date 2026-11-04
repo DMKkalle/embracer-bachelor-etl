@@ -21,8 +21,6 @@ def quality_summary(frame: pd.DataFrame) -> dict[str, int]:
     if "region_norm" in frame:
         summary["unknown_regions"] = int((frame["region_norm"] == "UNKNOWN").sum())
     if "language_norm" in frame:
-        summary["unknown_languages"] = int(
-            (frame["language_norm"] == "unknown").sum()
-        )
+        summary["unknown_languages"] = int((frame["language_norm"] == "unknown").sum())
 
     return summary
