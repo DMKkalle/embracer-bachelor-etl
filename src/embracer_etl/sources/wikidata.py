@@ -10,16 +10,16 @@ SEARCH_URL = "https://www.wikidata.org/w/api.php"
 ENTITY_URL = "https://www.wikidata.org/wiki/Special:EntityData/{qid}.json"
 
 ALLOWED_INSTANCE_OF = {
-    "Q7889",    # video game
+    "Q7889",  # video game
     "Q153813",  # video game expansion
     "Q705716",  # video game remake
 }
 
 DENIED_INSTANCE_OF = {
-    "Q11424",     # film
-    "Q5398426",   # television series
-    "Q482994",    # album
-    "Q134556",    # novel
+    "Q11424",  # film
+    "Q5398426",  # television series
+    "Q482994",  # album
+    "Q134556",  # novel
     "Q21191270",  # soundtrack album
     "Q15265344",  # video game series
     "Q17379835",  # media franchise
