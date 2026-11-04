@@ -1,0 +1,230 @@
+# =========================
+# Default pipeline-config (NUVARANDE VERKLIGA PIPELINE)
+# =========================
+# Den här filen beskriver hur projektets pipeline ÄR tänkt att fungera idag:
+# 1) Läs rå-CSV i data/raw/
+# 2) Normalisera plattform → platform_norm
+# 3) Evidens-baserad inferens av region_group + country
+# 4) Bygg works / editions / releases + länktabeller
+# 5) Enrichment via IGDB + GiantBomb + Wikidata (via separata skript)
+# 6) Merge till en masterfil (editions_enriched_*.csv) + QA-rapporter
+
+input:
+  dir: data/raw
+  pattern: "**/*.csv"            # Kör ALLA CSV (även i undermappar)
+  encoding: auto                 # Testa utf-8, latin1, utf-16
+  csv_sep: auto                  # Testa ',', ';', '\t'
+  columns:
+    object_id_field: "object_number"
+    title_field: "title"
+    platform_field: "object_name"
+    platform_type_field: "object_name.type"
+    category_field: "object_category"
+    broadcast_field: "broadcast_standard"
+    language_field: "title.language"
+    place_field: "place_of_publication"
+    serial_fields:
+      - "serial"
+      - "sku"
+      - "product_code"
+
+outputs:
+  dir: data/outputs
+  files:
+    # Kärntabeller (finns i repo i dag)
+    releases: "releases.csv"
+    editions: "editions.csv"
+    items_to_editions: "items_to_editions.csv"
+    objects_expanded: "objects_expanded.csv"
+    # Frivillig work-nivå (kan användas / ignoreras)
+    works: "works.csv"
+    # Granskning / provenance
+    review_queue: "review_queue.csv"
+    provenance: "provenance.json"
+    qa_dir: "qa"                  # qa_report.py skriver olika CSV hit
+    enrichment_dir: "enrichment"  # igdb/gb/wikidata_enrichment.csv
+  overwrite: true
+
+# -------------------------
+# Plattform-normalisering
+# -------------------------
+platform_normalization:
+  case_insensitive: true
+  explode_on_delimiters: [";", "|"]
+  synonyms:
+    SNES:
+      - "Nintendo Super Nintendo Entertainment System"
+      - "Super Nintendo"
+      - "Super Nintendo Entertainment System"
+      - "Super NES"
+      - "SNES"
+      - "SNS"
+    SFC:
+      - "Nintendo Super Famicom"
+      - "Super Famicom"
+      - "SFC"
+      - "SHVC"
+    # Fler kan läggas till (NES/Famicom, Mega Drive/Genesis etc.)
+  fallback_from_filename:
+    SNES: "(?i)\\b(snes|super.*nintendo)\\b"
+    SFC:  "(?i)\\b(sfc|famicom)\\b"
+  external_map: "configs/platform_map.yaml"
+
+# -------------------------
+# Evidens-baserad inferens
+# -------------------------
+region_inference:
+  method: "weighted_evidence"
+
+  broadcast_weights:
+    PAL:
+      region_group: "PAL"
+      weight: 0.70
+    NTSC:
+      region_group: "NTSC-U/C"
+      weight: 0.70
+    NTSC-J:
+      region_group: "NTSC-J"
+      weight: 0.70
+
+  place_map:
+    "Japan":        { country: "JP",  region_group: "NTSC-J",  weight: 0.90 }
+    "日本":          { country: "JP",  region_group: "NTSC-J",  weight: 0.90 }
+    "Hong Kong":    { country: "HK",  region_group: "NTSC-J",  weight: 0.90 }
+    "Taiwan":       { country: "TW",  region_group: "NTSC-J",  weight: 0.90 }
+    "Korea":        { country: "KR",  region_group: "NTSC-J",  weight: 0.90 }
+    "United States":{ country: "US",  region_group: "NTSC-U/C", weight: 0.90 }
+    "USA":          { country: "US",  region_group: "NTSC-U/C", weight: 0.90 }
+    "Canada":       { country: "CA",  region_group: "NTSC-U/C", weight: 0.90 }
+    "United Kingdom": { country: "GB", region_group: "PAL",   weight: 0.90 }
+    "Germany":      { country: "DE",  region_group: "PAL",    weight: 0.90 }
+    "France":       { country: "FR",  region_group: "PAL",    weight: 0.90 }
+    "Spain":        { country: "ES",  region_group: "PAL",    weight: 0.90 }
+    "Italy":        { country: "IT",  region_group: "PAL",    weight: 0.90 }
+    "Scandinavia":  { country: "SCN", region_group: "PAL",    weight: 0.60 }
+
+  language_hints:
+    "ja":       { region_group: "NTSC-J",  weight: 0.40 }
+    "zh-Hant":  { country: "TW", region_group: "NTSC-J", weight: 0.40 }
+    "zh-HK":    { country: "HK", region_group: "NTSC-J", weight: 0.40 }
+    "en-US":    { country: "US", region_group: "NTSC-U/C", weight: 0.30 }
+    "en-GB":    { country: "GB", region_group: "PAL",    weight: 0.30 }
+    "de":       { country: "DE", region_group: "PAL",    weight: 0.30 }
+    "fr":       { country: "FR", region_group: "PAL",    weight: 0.30 }
+    "es":       { country: "ES", region_group: "PAL",    weight: 0.30 }
+    "it":       { country: "IT", region_group: "PAL",    weight: 0.30 }
+
+  serial_patterns:
+    - pattern: "^SHVC[- ]?[A-Z0-9]+"
+      infer: { region_group: "NTSC-J", country: "JP" }
+      weight: 0.95
+    - pattern: "^SNS[- ]?[A-Z0-9]+[- ]?USA$"
+      infer: { region_group: "NTSC-U/C", country: "US" }
+      weight: 0.95
+    - pattern: "^SNSP[- ]?[A-Z0-9]+[- ]?EUR$"
+      infer: { region_group: "PAL", country: "EU" }
+      weight: 0.95
+    - pattern: "[- ](NOE|UKV|FRA|ESP|ITA|HOL|SCN)$"
+      infer_from_suffix: true
+      weight: 0.95
+    - pattern: "[- ]JPN$"
+      infer: { region_group: "NTSC-J", country: "JP" }
+      weight: 0.95
+
+  thresholds:
+    region_group_min: 0.70
+    country_min: 0.70
+
+  tie_breaking:
+    order: ["serial_patterns", "place_map", "broadcast_weights", "language_hints"]
+
+  unknown_labels:
+    region_group: "unknown"
+    country: "unknown"
+    status_if_unknown: "needs_manual"
+
+# -------------------------
+# ID-generering
+# -------------------------
+id_generation:
+  slug:
+    lowercase: true
+    replace:
+      "&": "and"
+    remove_regex: "[^a-z0-9]+"
+    trim_hyphens: true
+  work_id: "{slug(title)}_{platform_norm}"
+  release_id: "{work_id}_{region_group}_{country}"
+
+# -------------------------
+# Enrichment (som det funkar NU)
+# -------------------------
+# Viktigt: enrichment körs via separata Python-skript:
+#   - src/igdb_enrich_editions.py    -> data/outputs/enrichment/igdb_enrichment.csv
+#   - src/gb_enrich_editions.py      -> data/outputs/enrichment/giantbomb_enrichment.csv
+#   - src/enrich_wikidata.py         -> data/outputs/enrichment/wikidata_enrichment.csv
+#   - src/merge_enriched.py          -> data/processed/editions_enriched_*.csv
+#
+# Strategi i merge_enriched.py:
+#   1) Om GiantBomb-match finns → primary_source = giantbomb
+#   2) Annars, om IGDB-match → primary_source = igdb
+#   3) Wikidata läggs på som extra fält (region, språk, country-of-origin, osv.).
+
+enrichment:
+  enabled: true
+
+  primary_source_order:
+    - giantbomb
+    - igdb
+
+  secondary_sources:
+    - wikidata
+
+  sources:
+    igdb:
+      enabled: true
+      weight: 0.4        # Endast dokumentation; merge_enriched.py använder ordning ovan.
+      # IGDB går via Twitch:
+      #   TWITCH_CLIENT_ID
+      #   TWITCH_CLIENT_SECRET
+      rate_limit_per_min: 20
+      output: "data/outputs/enrichment/igdb_enrichment.csv"
+
+    giantbomb:
+      enabled: true
+      weight: 0.4
+      env:
+        api_key_env: "GIANTBOMB_API_KEY"
+        user_agent_env: "GB_USER_AGENT"
+      rate_limit_per_hour: 180       # styrs i gb_credits.py / gb_enrich_editions.py
+      output: "data/outputs/enrichment/giantbomb_enrichment.csv"
+
+    wikidata:
+      enabled: true
+      weight: 0.2
+      user_agent: "Exjobb-Embracer-Wikidata/0.3"
+      output: "data/outputs/enrichment/wikidata_enrichment.csv"
+
+  merge:
+    script: "src/merge_enriched.py"
+    output_master: "data/processed/editions_enriched_snes.csv"
+
+# -------------------------
+# Process-beteende
+# -------------------------
+processing:
+  logging_level: "INFO"
+  keep_unknown_rows: true
+  write_review_queue: true
+  explode_delimiters:
+    title: [";"]
+    platform: [";"]
+    language: [";"]
+  validators:
+    require_unique_ids: true
+    require_object_id: true
+  reproducibility:
+    write_run_manifest: true
+    run_manifest_path: "data/outputs/run_manifest.json"
+  security:
+    redact_api_keys_in_logs: true

@@ -1,17 +1,17 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
-.ruff_cache/
 .venv/
+venv/
 .env
-.env.*
-!.env.example
 .igdb_token.json
-data/
-outputs/
-cache/
-logs/
-*.db
+.DS_Store
 .vscode/
 .idea/
-.DS_Store
+
+# Generated pipeline output
+/data/outputs/
+
+# Raw archive exports must never be committed. Keep only the synthetic demo input.
+/data/raw/*
+!/data/raw/sample_catalog.csv

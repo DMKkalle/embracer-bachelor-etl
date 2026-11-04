@@ -1,34 +1,18 @@
 # Thesis context
 
-## Problem
+The Bachelor thesis investigated how video-game metadata can be collected, normalized and quality-assured in a scalable and traceable way for digital game preservation.
 
-Game-preservation catalogues aggregate metadata created across decades, regions and databases. The same underlying game may have different titles, platform names, release dates, regions, languages and source-specific identifiers.
+The practical problem was that metadata across an archive and third-party databases can be incomplete or inconsistent: titles differ by language and region, platform names vary, identifiers are not standardized, and sources disagree.
 
-## Thesis project
+The proof-of-concept therefore combined:
 
-The Bachelor thesis in Computer Science at Karlstad University was developed in collaboration with Embracer Games Archive.
+- modular ETL stages,
+- a normalized data model,
+- alias and title normalization,
+- source-specific record matching,
+- IGDB, GiantBomb, Wikidata and Wikipedia enrichment,
+- deterministic IDs and link tables,
+- source traceability,
+- confidence-oriented QA and manual review for difficult cases.
 
-The engineering work focused on:
-
-1. normalizing archive metadata,
-2. creating consistent edition/release representations,
-3. enriching records from external sources,
-4. linking external records to archive records,
-5. retaining source provenance,
-6. surfacing uncertain matches for review.
-
-The working thesis pipeline processed more than 10,000 game editions.
-
-## External sources
-
-The original workflow experimented with and used metadata from sources including Wikidata, IGDB and GiantBomb. Exact source coverage varied by field and availability.
-
-## What this public repository proves
-
-This repository is a sanitized reconstruction rather than a dump of the thesis working directory.
-
-A reviewer can run normalization on synthetic data, inspect entity-resolution logic, see external-source boundaries, run weighted consensus, inspect provenance, see ambiguous records routed to a review queue, and run the full test suite in CI.
-
-## Data confidentiality
-
-No raw Embracer archive export is included in the public repository. The original working repository remains private.
+The original working repository and archive-derived datasets remain private. This repository is a sanitized reconstruction of the final implementation plus a deterministic synthetic demo.
