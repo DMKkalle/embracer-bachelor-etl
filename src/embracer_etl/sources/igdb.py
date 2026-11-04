@@ -16,7 +16,7 @@ class IGDBCredentials:
     client_secret: str
 
     @classmethod
-    def from_environment(cls) -> "IGDBCredentials":
+    def from_environment(cls) -> IGDBCredentials:
         client_id = os.getenv("TWITCH_CLIENT_ID")
         client_secret = os.getenv("TWITCH_CLIENT_SECRET")
         if not client_id or not client_secret:
